@@ -9,15 +9,19 @@ class indexController extends Controller
 {
     public function index()
     {
+        $cookiefile = 'storage/cookie.txt';
 
-        $ch = curl_init('https://radar.com.ua/nasosi/tsirkulyatsionnie/halm-hupa-25-60-u-130');
+        $ch = curl_init('http://laravel.loc/cook');
+        //$ch = curl_init('https://radar.com.ua/nasosi/tsirkulyatsionnie/halm-hupa-25-60-u-130');
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        //curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_HEADER, true);
         //curl_setopt($ch, CURLOPT_NOBODY, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_COOKIEJAR, $cookiefile);
+        //curl_setopt($ch, CURLOPT_COOKIE, 'curl_normal_coockie=1; curl_session_coockie=1');
+        //curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
         $html = curl_exec($ch);
 
@@ -50,5 +54,38 @@ class indexController extends Controller
 
         //phpQuery::unloadDocuments();
 
+    }
+
+    public function cook(){
+        $cook = false;
+
+        if( isset( $_COOKIE[ 'curl_session_coockie' ] ))
+        {
+            $cook = true;
+            echo "Сессионная кука есть\r\n";
+        }
+        if( isset( $_COOKIE[ 'curl_normal_coockie' ] ))
+        {
+            $cook = true;
+            echo "Нормальная кука есть\r\n";
+        }
+
+        setcookie('curl_session_coockie', 1);
+        setcookie('curl_normal_coockie', 1);
+        /*if(!$cook)
+        {
+            setcookie('curl_session_coockie', 1);
+            setcookie('curl_normal_coockie', 1);
+        }*/
+
+
+        if($cook)
+        {
+            echo "Я тебя знаю!";
+        }
+        else
+        {
+            echo "Вы тут новенький!";
+        }
     }
 }
