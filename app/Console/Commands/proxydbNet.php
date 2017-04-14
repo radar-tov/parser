@@ -42,7 +42,7 @@ class proxydbNet extends Command
         $cookiefile = public_path('cookies/proxyNet.txt');
         file_put_contents( $cookiefile, '');
 
-        $html = $this->requestCurl('http://proxydb.net/?protocol=socks5&anonlvl=4&offset=50');
+        $html = $this->requestCurl('http://proxydb.net/?protocol=socks4&protocol=socks5&anonlvl=3&anonlvl=4&offset=100');
 
         phpQuery::newDocument($html);
 
