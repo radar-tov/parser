@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use phpQuery;
+use App\Models\Proxy;
 
 class proxydbNet extends Command
 {
@@ -38,21 +39,74 @@ class proxydbNet extends Command
      */
     public function handle()
     {
-        $cookiefile = public_path('cookie.txt');
+        $cookiefile = public_path('cookies/proxyNet.txt');
         file_put_contents( $cookiefile, '');
 
-        $html = $this->requestCurl('http://proxydb.net/?protocol=socks4&anonlvl=3&anonlvl=4');
-
-        //xprint($html);
+        $html = $this->requestCurl('http://proxydb.net/?protocol=socks5&anonlvl=4&offset=50');
 
         phpQuery::newDocument($html);
 
-        $ips = pq('.table-sm > tbody > tr > td > a');
+        $trs = pq('.table-sm > tbody > tr');
 
-        foreach ($ips as $ip)
-        {
-            $ip = pq($ip);
-            xprint($ip->text());
+        foreach ($trs as $tr) {
+
+            $tr = pq($tr);
+            $ipPort = explode(':', $tr->find('a')->text());
+            $ip = $ipPort[0];
+            $port = $ipPort[1];
+
+            $type = trim($tr->find('td:nth-child(2)')->text());
+            switch ($type) {
+                case 'HTTP':
+                    $type_id = 1;
+                    break;
+                case 'HTTPS':
+                    $type_id = 2;
+                    break;
+                case 'SOCKS4':
+                    $type_id = 3;
+                    break;
+                case 'SOCKS5':
+                    $type_id = 4;
+                    break;
+                default:
+                    $type_id = 1;
+            }
+
+            $anonymi_level = trim($tr->find('td:nth-child(3)')->text());
+            switch ($anonymi_level) {
+                case 'Transparent':
+                    $anonymi_level_id = 1;
+                    break;
+                case 'Anonymous':
+                    $anonymi_level_id = 2;
+                    break;
+                case 'Distorting':
+                    $anonymi_level_id = 3;
+                    break;
+                case 'High Anonymous':
+                    $anonymi_level_id = 4;
+                    break;
+                default:
+                    $anonymi_level_id = 1;
+            }
+
+            //echo 'IP: ' . $ip . ':' . $port . ' - Type: ' . $type . ' - Anonymous Level: ' . $anonymi_level . "\n";
+
+            $proxy = Proxy::where('ip', $ip)->first();
+
+            if(!$proxy)
+            {
+                $proxy = new Proxy();
+            }
+
+            $proxy->ip = $ip;
+            $proxy->port = $port;
+            $proxy->type_id = $type_id;
+            $proxy->anonymi_level_id = $anonymi_level_id;
+            $proxy->status_id = 2;
+            $proxy->save();
+
         }
 
         phpQuery::unloadDocuments();
