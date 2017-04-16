@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         \App\Console\Commands\proxydbNet::class,
         \App\Console\Commands\Cheker::class,
+        \App\Console\Commands\checkerProxyNet::class,
     ];
 
     /**

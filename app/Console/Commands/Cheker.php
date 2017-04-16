@@ -40,7 +40,7 @@ class Cheker extends Command
     public function handle()
     {
         //$this->multiCurl();
-        $proxys = Proxy::where('status_id', '>', 0)->get();//->take(10)
+        $proxys = Proxy::where('status_id', 3)->get();//->take(10)
 
         foreach ($proxys as $proxy)
         {
@@ -50,7 +50,7 @@ class Cheker extends Command
             {
                 $proxy->status_id = 1;
                 $proxy->save();
-                echo "Delete " . $proxy->ip . "\n\r\n\r";
+                echo "Error " . $proxy->ip . "\n\r\n\r";
             }
             else
             {

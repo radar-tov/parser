@@ -104,7 +104,7 @@ class proxydbNet extends Command
             $proxy->port = $port;
             $proxy->type_id = $type_id;
             $proxy->anonymi_level_id = $anonymi_level_id;
-            $proxy->status_id = 2;
+            $proxy->status_id = 3;
             $proxy->save();
 
         }
